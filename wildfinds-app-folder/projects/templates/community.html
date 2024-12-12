@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block custom_styles %}
+<style>
+body {
+    background-image: url('/static/Background_2D_GreenForest.jpg');
+    background-size: cover;
+    background-position: 0%;
+}
+
+.post-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    flex-wrap:wrap;
+    gap: 20px;
+    margin: center;
+}
+
+.post {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    max-width: 300px;
+    text-align: center;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.post img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+</style>
+{% endblock %}
+{% block content %}
+
+<h1 style="margin-top: .5em;">Posts within {{ radius }} miles</h1>
+<form method="GET" action="{{ url_for('main.community') }}">
+    <label for="radius">Filter posts within radius:</label>
+    <select name="radius" id="radius" onchange="this.form.submit()">
+        <option value="10" {% if radius == 10 %}selected{% endif %}>10 miles</option>
+        <option value="25" {% if radius == 25 %}selected{% endif %}>25 miles</option>
+        <option value="50" {% if radius == 50 %}selected{% endif %}>50 miles</option>
+        <option value="100" {% if radius == 100 %}selected{% endif %}>100 miles</option>
+    </select>
+</form>
+
+
+{% if posts %}
+    <div class="post-container">
+        {% for post in posts %}
+            <div class="post">
+                <img src="{{ url_for('static', filename='uploads/' + post.photo) }}" alt="Post Image">
+                <h4>{{ post.caption }}</h4>
+                <p>Posted by: <a href="{{ url_for('main.profile', user_id=post.user.id) }}">{{ post.user.username }}</a></p>
+                <p>Date: {{ post.date_posted.strftime('%B %d, %Y') }}</p>
+                <p>Location: {{post.city_posted_in}}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <h2>No posts found within {{ radius }} miles.</h2>
+{% endif %}
+
+{% endblock %}

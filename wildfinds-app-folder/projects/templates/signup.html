@@ -1,0 +1,59 @@
+
+{% extends "base.html" %}
+{% block custom_styles %}
+<style>
+        body {
+                background-image: url('/static/Forest_Auth_Page.jpg');
+                background-size: cover;
+        }
+</style>
+{% endblock %}
+{% block content %}
+<div class="column is-4 is-offset-4">
+    <h1 class="title">Sign Up</h1>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="warning">
+           {{ messages[0] }}
+        </div>
+    {% endif %}
+    {% endwith %}
+    <div class="box">
+        <form method="POST" action="/signup">
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="username" name="username" placeholder="Username" autofocus="">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="email" name="email" placeholder="Email" autofocus="">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="text" name="name" placeholder="Name" autofocus="">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="password" name="password" placeholder="Password">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="text" id="city" name="city" placeholder="City" autofocus="">
+                </div>
+            </div>
+            <input type="hidden" id="city-lat" name="latitude">
+            <input type="hidden" id="city-lng" name="longitude">
+
+            <button class="button is-block is-info is-large is-fullwidth">Sign Up</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

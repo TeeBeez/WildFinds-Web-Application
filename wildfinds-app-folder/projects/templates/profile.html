@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block custom_styles %}
+<style>
+  /* Profile Page Styles */
+
+  body {
+                background-image: url('/static/Background_2D_GreenForest.jpg');
+                background-size:cover;
+        }
+
+  .profile-page {
+      display: grid;
+      grid-template-areas:
+          "user-posts user-info"
+          "user-posts upload";
+      grid-template-columns: 70% 30%; /* Wider left section, narrower right */
+      gap: 1rem;
+      padding: 50px;
+      margin: 0px;
+  }
+
+  .user-info {
+      grid-area: user-info;
+      padding: 20px;
+      background-color: #f0f0f0;
+      border-radius: 8px;
+      text-align: left;
+      box-shadow: 0 0 10px rgba(0, 0, 1, 1);
+  }
+
+  .user-posts {
+      grid-area: user-posts;
+      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-radius: 8px;
+      overflow-y: auto;
+      box-shadow: 0 0 10px rgba(0, 0, 1, 1);
+  }
+
+  .post {
+      width: 45%;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 10px;
+      text-align: center;
+  }
+
+  .no-posts {
+    text-align: center; /* Centers the "no posts" message */
+    color: #666; /* Optional: Text color */
+    font-style: italic; /* Optional: Italicized text for "no posts" */
+}
+
+.no-posts img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+  }
+  
+.upload-section {
+      grid-area: upload;
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 1, 1);
+      align-self: end; /* Aligns to the bottom */
+  }
+
+.post-image {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+  }
+</style>
+
+{% endblock %}
+{% block content %}
+
+<div class="profile-page">
+  <!-- User Info Section -->
+  <div class="user-info">
+    <h2>{{ user.name }}'s Profile</h2>
+    <br>
+    <form action="{{ url_for('main.profile') }}" method="POST">
+      <label for="gender">Gender:</label>
+      <input type="text" maxlength="10" id="gender" name="gender" value="{{ user.gender }}" required>
+      <br>
+      <label for="age">Age:</label>
+      <input type="number" id="age" name="age" value="{{ user.age }}" required>
+      <br>
+      <label for="city">City:</label>
+      <input type="text" id="city" name="city" value="{{ user.city }}" placeholder="Start typing your city..." required>
+      <input type="hidden" id="city-lat" name="latitude">
+      <input type="hidden" id="city-lng" name="longitude">
+      <br>
+      <button class="general-btn" type="submit">Update Profile</button>
+    </form>
+  </div>
+
+<!-- Display user’s posts -->
+<div class="main-content">
+  <div class="user-posts">
+    <h2>Your Posts</h2>
+    {% if posts %}
+    {% for post in posts %}
+    <div class="post" id="post-{{ post.id }}">
+      <img src="{{ url_for('static', filename='uploads/' + post.photo) }}" alt="User's photo" class="post-image">
+      <div class="post-caption">
+          <h4>{{ post.caption }}</h4>
+          <button class="edit-post" data-post-id="{{ post.id }}">Edit Caption</button>
+          <button class="delete-post" data-post-id="{{ post.id }}">Delete</button>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="no-posts">
+      <p>No posts yet. Start sharing!</p>
+      <img src="/static/no-posts-placeholder.jpg" alt="No Posts">
+    </div>
+  {% endif %}
+  </div>
+</div>  
+
+  <!-- Form to add a new post -->
+<div class="upload-section">
+  <h2>Upload a New Post</h2>
+  <form action="{{ url_for('main.upload_post') }}" method="POST" enctype="multipart/form-data">
+    <label for="caption">Caption:</label>
+    <br>
+    <input type="textarea" id="caption" name="caption" placeholder="Enter a caption" required>
+    <br>
+    <label for="city_posted_in">Location:</label>
+    <br>
+    <input type="text" id="city_posted_in" name="city_posted_in" placeholder="Enter location..." required>
+    <input type="hidden" id="city-lat" name="latitude">
+    <input type="hidden" id="city-lng" name="longitude">
+    <br>
+    <script>
+      // Initialize Google Places Autocomplete
+      function initializeAutocomplete() {
+          const locationInput = document.getElementById('city_posted_in');
+          const autocomplete = new google.maps.places.Autocomplete(locationInput);
+  
+          // Optional: Restrict autocomplete results to a specific region
+          autocomplete.setComponentRestrictions({
+              country: ["us"]  // Adjust as needed
+          });
+      }
+  
+      // Run on page load
+      document.addEventListener('DOMContentLoaded', initializeAutocomplete);
+    </script>
+  
+    <label for="photo">Photo:</label>
+    <input type="file" id="photo" name="photo" required>
+    <button class="general-btn" type="submit">Upload</button>
+  </form>
+</div>
+</div>
+
+
+{% endblock %}
